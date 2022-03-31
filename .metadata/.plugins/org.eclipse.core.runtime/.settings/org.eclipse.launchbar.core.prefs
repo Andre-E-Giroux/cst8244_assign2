@@ -1,0 +1,10 @@
+LaunchTargetManager/com.qnx.tools.ide.target.qconn,QNX_Target/RELEASE=7.0.0
+LaunchTargetManager/com.qnx.tools.ide.target.qconn,QNX_Target/arch=x86_64
+LaunchTargetManager/com.qnx.tools.ide.target.qconn,QNX_Target/os=qnx
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/arch=x86_64
+LaunchTargetManager/org.eclipse.launchbar.core.launchTargetType.local,Local/os=win32
+activeLaunchTarget=com.qnx.tools.ide.target.qconn\:QNX_Target
+com.qnx.tools.ide.qde.debug.core.descriptorType.project\:P/metronome/activeLaunchMode=run
+com.qnx.tools.ide.qde.debug.core.descriptorType.project\:P/metronome/activeLaunchTarget=com.qnx.tools.ide.target.qconn\:QNX_Target
+configDescList=com.qnx.tools.ide.qde.debug.core.descriptorType.project\:P/metronome
+eclipse.preferences.version=1
