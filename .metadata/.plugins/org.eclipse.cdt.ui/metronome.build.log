@@ -1,7 +1,7 @@
-17:13:35 **** Build of configuration x86_64-debug for project metronome ****
+16:38:55 **** Incremental Build of configuration x86_64-debug for project metronome ****
 make -j12 all 
 qcc -Vgcc_ntox86_64 -c -Wp,-MMD,build/x86_64-debug/src/metronome.d,-MT,build/x86_64-debug/src/metronome.o -o build/x86_64-debug/src/metronome.o  -Wall -fmessage-length=0 -g -O0 -fno-builtin  src/metronome.c
 qcc -Vgcc_ntox86_64 -o build/x86_64-debug/metronome   build/x86_64-debug/src/metronome.o  
 
-17:13:36 Build Finished (took 690ms)
+16:38:56 Build Finished (took 299ms)
 
