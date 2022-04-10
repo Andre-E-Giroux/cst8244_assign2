@@ -309,3 +309,89 @@ java.io.IOException: The system cannot find the path specified
 
 !ENTRY com.qnx.tools.ide.capabilities.ui 4 0 2022-03-31 22:41:05.281
 !MESSAGE activityProfiles.activityRequirementBinding: Invalid requiredActivityId com.qnx.tools.ide.capabilities.ui.activity.qnxDeveloper
+!SESSION 2022-04-09 17:06:25.903 -----------------------------------------------
+eclipse.buildId=7.0.4
+java.version=1.8.0_192
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_CA
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY org.eclipse.launchbar.core 2 0 2022-04-09 17:06:28.724
+!MESSAGE Enablement expression is missing for config provider for com.qnx.tools.ide.qde.core.recursiveMkProject
+
+!ENTRY org.eclipse.launchbar.core 2 0 2022-04-09 17:06:28.728
+!MESSAGE Enablement expression is missing for config provider for com.qnx.tools.ide.qde.debug.core.descriptorType.default
+
+!ENTRY org.eclipse.launchbar.core 2 0 2022-04-09 17:06:28.730
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2022-04-09 17:06:28.749
+!MESSAGE Enablement expression is missing for descriptor type org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY org.eclipse.launchbar.core 2 0 2022-04-09 17:06:28.752
+!MESSAGE Enablement expression is missing for config provider for org.eclipse.cdt.debug.core.coreBuildDescriptorType
+
+!ENTRY com.qnx.tools.ide.core 4 0 2022-04-09 17:06:29.320
+!MESSAGE The system cannot find the path specified
+!STACK 0
+java.io.IOException: The system cannot find the path specified
+	at java.io.WinNTFileSystem.createFileExclusively(Native Method)
+	at java.io.File.createNewFile(File.java:1012)
+	at com.qnx.tools.ide.core.QNXIdePlugin.addQNXDocExtension(QNXIdePlugin.java:665)
+	at com.qnx.tools.ide.core.QNXIdePlugin.initializeInstallInfo(QNXIdePlugin.java:463)
+	at com.qnx.tools.ide.core.QNXIdePlugin.getCurrentInstall(QNXIdePlugin.java:520)
+	at com.qnx.tools.ide.core.QNXIdePlugin$SDPSDKProvider.getSDKDescriptor(QNXIdePlugin.java:909)
+	at com.qnx.tools.ide.core.ISDKDescriptor$IRegistry$Impl.getSDK(ISDKDescriptor.java:183)
+	at com.qnx.tools.ide.core.QNXIdePlugin.getQnxHostPath(QNXIdePlugin.java:162)
+	at com.qnx.tools.ide.core.QNXIdePlugin.getQnxHost(QNXIdePlugin.java:158)
+	at com.qnx.tools.ide.qde.managedbuilder.core.QCCCompilerInfo.qnxConfigChanged(QCCCompilerInfo.java:192)
+	at com.qnx.tools.ide.qde.managedbuilder.core.QCCCompilerInfo.qnxConfigChanged(QCCCompilerInfo.java:201)
+	at com.qnx.tools.ide.qde.managedbuilder.core.QCCCompilerInfo.getCompilerInfo(QCCCompilerInfo.java:133)
+	at com.qnx.tools.ide.qde.managedbuilder.core.xmlgen.QCCElementProvider.<init>(QCCElementProvider.java:63)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423)
+	at java.lang.Class.newInstance(Class.java:442)
+	at org.eclipse.core.internal.registry.osgi.RegistryStrategyOSGI.createExecutableExtension(RegistryStrategyOSGI.java:184)
+	at org.eclipse.core.internal.registry.ExtensionRegistry.createExecutableExtension(ExtensionRegistry.java:905)
+	at org.eclipse.core.internal.registry.ConfigurationElement.createExecutableExtension(ConfigurationElement.java:243)
+	at org.eclipse.core.internal.registry.ConfigurationElementHandle.createExecutableExtension(ConfigurationElementHandle.java:55)
+	at org.eclipse.cdt.managedbuilder.core.ManagedBuildManager.createConfigProvider(ManagedBuildManager.java:2636)
+	at org.eclipse.cdt.managedbuilder.core.ManagedBuildManager.loadConfigElements(ManagedBuildManager.java:2521)
+	at org.eclipse.cdt.managedbuilder.core.ManagedBuildManager.loadExtensionsSynchronized(ManagedBuildManager.java:2196)
+	at org.eclipse.cdt.managedbuilder.core.ManagedBuildManager.loadExtensions(ManagedBuildManager.java:2126)
+	at org.eclipse.cdt.managedbuilder.core.ManagedBuildManager.getExtensionConfiguration(ManagedBuildManager.java:595)
+	at org.eclipse.cdt.managedbuilder.internal.core.Configuration.loadFromProject(Configuration.java:841)
+	at org.eclipse.cdt.managedbuilder.internal.core.Configuration.<init>(Configuration.java:402)
+	at org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider.load(ConfigurationDataProvider.java:391)
+	at org.eclipse.cdt.managedbuilder.internal.dataprovider.ConfigurationDataProvider.loadConfiguration(ConfigurationDataProvider.java:557)
+	at org.eclipse.cdt.internal.core.settings.model.CConfigurationDescriptionCache.loadData(CConfigurationDescriptionCache.java:136)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescription.loadDatas(CProjectDescription.java:196)
+	at org.eclipse.cdt.internal.core.settings.model.xml.XmlProjectDescriptionStorage.loadProjectDescription(XmlProjectDescriptionStorage.java:500)
+	at org.eclipse.cdt.internal.core.settings.model.xml.XmlProjectDescriptionStorage.getProjectDescription(XmlProjectDescriptionStorage.java:237)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescriptionManager.getProjectDescriptionInternal(CProjectDescriptionManager.java:426)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescriptionManager.getProjectDescription(CProjectDescriptionManager.java:408)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescriptionManager.getProjectDescription(CProjectDescriptionManager.java:402)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescriptionManager.getProjectDescription(CProjectDescriptionManager.java:395)
+	at org.eclipse.cdt.internal.core.settings.model.CProjectDescriptionManager.getProjectDescription(CProjectDescriptionManager.java:630)
+	at org.eclipse.cdt.core.model.CoreModel.getProjectDescription(CoreModel.java:1372)
+	at com.qnx.tools.ide.qde.debug.internal.core.QNXToolchainPropertyTester.isQNXToolChainUsed(QNXToolchainPropertyTester.java:34)
+	at com.qnx.tools.ide.qde.debug.internal.core.QNXToolchainPropertyTester.test(QNXToolchainPropertyTester.java:18)
+	at org.eclipse.core.internal.expressions.Property.test(Property.java:58)
+	at org.eclipse.core.internal.expressions.TestExpression.evaluate(TestExpression.java:100)
+	at org.eclipse.core.internal.expressions.CompositeExpression.evaluateAnd(CompositeExpression.java:53)
+	at org.eclipse.core.internal.expressions.EnablementExpression.evaluate(EnablementExpression.java:55)
+	at org.eclipse.launchbar.core.internal.LaunchDescriptorTypeInfo.enabled(LaunchDescriptorTypeInfo.java:91)
+	at org.eclipse.launchbar.core.internal.LaunchBarManager.launchObjectAdded(LaunchBarManager.java:342)
+	at org.eclipse.launchbar.core.internal.ProjectLaunchObjectProvider.init(ProjectLaunchObjectProvider.java:38)
+	at org.eclipse.launchbar.core.internal.LaunchBarManager.loadExtensions(LaunchBarManager.java:273)
+	at org.eclipse.launchbar.core.internal.LaunchBarManager.init(LaunchBarManager.java:126)
+	at org.eclipse.launchbar.core.internal.LaunchBarManager$1.run(LaunchBarManager.java:95)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:55)
+
+!ENTRY com.qnx.tools.ide.capabilities.ui 4 0 2022-04-09 17:06:31.941
+!MESSAGE activityProfiles.activityRequirementBinding: Invalid activityId com.qnx.tools.ide.capabilities.ui.activity.qnxSystemDeveloper
+
+!ENTRY com.qnx.tools.ide.capabilities.ui 4 0 2022-04-09 17:06:31.952
+!MESSAGE activityProfiles.activityRequirementBinding: Invalid requiredActivityId com.qnx.tools.ide.capabilities.ui.activity.qnxDeveloper

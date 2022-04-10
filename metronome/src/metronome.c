@@ -30,8 +30,17 @@ int tsb;
 int outputPosition;
 int server_coid;
 char data[255];
+
+void printOutput()
+{
+	float interval = ((float)tst/((float)tsb*((float)bpm/60.0f)));
+	int nanoseconds = (float)interval*100;
+	printf("[metronome: %d beats/min, time signature %d/%d, sec-per-interval: %f nanoSecs: %d000000000]\n", bpm, tst, tsb, interval, nanoseconds);
+}
+
 int io_read(resmgr_context_t *ctp, io_read_t *msg, RESMGR_OCB_T *ocb) {
 
+	printf("reading\n");
 	int nb;
 	if (data == NULL)
 		return 0;
@@ -63,6 +72,8 @@ int io_read(resmgr_context_t *ctp, io_read_t *msg, RESMGR_OCB_T *ocb) {
 int io_write(resmgr_context_t *ctp, io_write_t *msg, RESMGR_OCB_T *ocb) {
 	int nb = 0;
 
+	printf("write!\n");
+
 	if (msg->i.nbytes == ctp->info.msglen - (ctp->offset + sizeof(*msg))) {
 		/* have all the data */
 		char *buf;
@@ -87,11 +98,11 @@ int io_write(resmgr_context_t *ctp, io_write_t *msg, RESMGR_OCB_T *ocb) {
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, stopCode);
 		} else if (strstr(buf, "start") != NULL) {
-
+			printf("IT HAS STARTED!\n");
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, startCode);
 		} else if (strstr(buf, "quit") != NULL) {
-
+			printf("quiting set to code\n");
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, quitCode);
 		} else {
@@ -149,7 +160,7 @@ void *childThread() {
 		perror("name_attach failed");
 		pthread_exit(NULL);
 	}
-	fp = fopen("dev/local/metronome", "r");
+	fp = fopen("/dev/local/metronome", "r");
 	if (fp == NULL) {
 		perror("fopen failed");
 		pthread_exit(NULL);
@@ -169,10 +180,14 @@ void *childThread() {
 
 	while (1) {
 		rcvid = MsgReceivePulse(attach->chid, &msg, sizeof(msg), NULL);
+
+		printf("rcvid = %d\n", rcvid);
+
 		if (rcvid == 0) {
 
+			printf("msg.pulse.code = %d		it must be = %d\n", msg.pulse.code, MY_PULSE_CODE);
 			if (msg.pulse.code == MY_PULSE_CODE) { //ASK PROF ABOUT THIS
-				fp = fopen("dev/local/metronome", "r");
+				fp = fopen("/dev/local/metronome", "r");
 				if (fp == NULL) {
 					perror("fopen failed");
 					pthread_exit(NULL);
@@ -180,27 +195,33 @@ void *childThread() {
 
 				fscanf(fp, "%s", command);
 				if (stopped == 0) {
+					printf("was stopped\n");
 					if (strcmp(command, "set") == 0) {
 						fscanf(fp, "%s", inBpm);
 						fscanf(fp, "%s", inTst);
 						fscanf(fp, "%s", inTsb);
 						char *input[] = { inBpm, inTst, inTsb };
+						printf("was set\n");
 						set(input);
 					}
 					if (msg.pulse.value.sival_int<10) {
-
+						printf("sival___\n");
 						int sleepTime = msg.pulse.value.sival_int;
-						sleep(sleepTime);
+						//sleep(sleepTime);
 					}
 					if (msg.pulse.value.sival_int==stopCode) {
+						printf("has stopped___\n");
 						stopped = 1;
 					}
 
 				}
+				printf("next check!\n");
 				if (msg.pulse.value.sival_int==startCode) {
 					stopped = 0;
 				}
+				printf("sival = %d\n", msg.pulse.value.sival_int);
 				if (msg.pulse.value.sival_int==quitCode) {
+					printf("quit!!!\n");
 					name_detach(attach, 0);
 					quit = 1;
 					pthread_exit(NULL);
@@ -218,14 +239,14 @@ void *childThread() {
 }
 
 int main(int argc, char *argv[]) {
-	if (argc != 1 && argc != 4) {
-		printf("Invalid Number Of Arguments\n");
-		return EXIT_FAILURE;
-	}
-
 	if (argc == 4) {
 		set(argv);
-		return EXIT_SUCCESS;
+		//return EXIT_SUCCESS;
+	}
+	else
+	{
+		printf("./metronome <bpm> <ts-top> <ts-bottom>\n");
+		return EXIT_FAILURE;
 	}
 	dispatch_t* dpp;
 	resmgr_io_funcs_t io_funcs;
@@ -262,5 +283,8 @@ int main(int argc, char *argv[]) {
 		ctp = dispatch_block(ctp);
 		dispatch_handler(ctp);
 	}
-	return EXIT_SUCCESS;
+
+	printf("closed successfully!\n");
+	pthread_attr_destroy(&attr);
+	name_close(server_coid);	return EXIT_SUCCESS;
 }
