@@ -21,6 +21,7 @@ const char *outputTable[] = { "|1&2&", "|1&2&3&", "|1&2&3&4&", "|1&2&3&4-5-",
 		"|1-2-3-", "|1&a2&a", "|1&a2&a3&a", "|1&a2&a3&a4&a" };
 const int stopCode = 29;
 const int startCode = 30;
+const int setCode = 31;
 const int quitCode = -1;
 
 int bpm;
@@ -31,16 +32,34 @@ int outputPosition;
 int server_coid;
 char data[255];
 
-void printOutput()
-{
-	float interval = ((float)tst/((float)tsb*((float)bpm/60.0f)));
-	int nanoseconds = (float)interval*100;
-	printf("[metronome: %d beats/min, time signature %d/%d, sec-per-interval: %f nanoSecs: %d000000000]\n", bpm, tst, tsb, interval, nanoseconds);
+void printOutput() {
+	float interval = ((float) tst / ((float) tsb * ((float) bpm / 60.0f)));
+	int nanoseconds = (float) interval * 100;
+	printf(
+			"[metronome: %d beats/min, time signature %d/%d, sec-per-interval: %f nanoSecs: %d000000000]\n",
+			bpm, tst, tsb, interval, nanoseconds);
+}
+
+void set(char *argv[]) {
+	int tempBpm = atoi(argv[0]);
+	int tempTst = atoi(argv[1]);
+	int tempTsb = atoi(argv[2]);
+	for (int i = 0; i < 8; i++) {
+
+		if (timeTable[i][0] == tempTst && timeTable[i][1] == tempTsb) {
+			bpm = tempBpm;
+			tst = tempTst;
+			tsb = tempTsb;
+			outputPosition = i;
+			return;
+		}
+	}
+	printf("Invalid timings.\n");
+	return;
 }
 
 int io_read(resmgr_context_t *ctp, io_read_t *msg, RESMGR_OCB_T *ocb) {
 
-	printf("reading\n");
 	int nb;
 	if (data == NULL)
 		return 0;
@@ -72,8 +91,6 @@ int io_read(resmgr_context_t *ctp, io_read_t *msg, RESMGR_OCB_T *ocb) {
 int io_write(resmgr_context_t *ctp, io_write_t *msg, RESMGR_OCB_T *ocb) {
 	int nb = 0;
 
-	printf("write!\n");
-
 	if (msg->i.nbytes == ctp->info.msglen - (ctp->offset + sizeof(*msg))) {
 		/* have all the data */
 		char *buf;
@@ -94,18 +111,39 @@ int io_write(resmgr_context_t *ctp, io_write_t *msg, RESMGR_OCB_T *ocb) {
 				printf("Integer is not between 1 and 9.\n");
 			}
 		} else if (strstr(buf, "stop") != NULL) {
-
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, stopCode);
 		} else if (strstr(buf, "start") != NULL) {
-			printf("IT HAS STARTED!\n");
+
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, startCode);
 		} else if (strstr(buf, "quit") != NULL) {
-			printf("quiting set to code\n");
 			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
 			_PULSE_CODE_MINAVAIL, quitCode);
+		} else if (strstr(buf, "set") != NULL) {
+			char *setParam = strsep(&buf, " ");
+			char inBpm[10];
+			char inTst[3];
+			char inTsb[3];
+
+			setParam = strsep(&buf, " ");
+			strcpy(inBpm, setParam);
+
+			setParam = strsep(&buf, " ");
+			strcpy(inTst, setParam);
+
+			setParam = strsep(&buf, "");
+			strcpy(inTsb, setParam);
+
+			char *input[] = { inBpm, inTst, inTsb };
+
+			set(input);
+			printOutput();
+
+			MsgSendPulse(server_coid, SchedGet(0, 0, NULL),
+			_PULSE_CODE_MINAVAIL, setCode);
 		} else {
+			printf("invalid Input: %s\n", buf);
 			strcpy(data, buf);
 		}
 
@@ -126,23 +164,6 @@ int io_open(resmgr_context_t *ctp, io_open_t *msg, RESMGR_HANDLE_T *handle,
 		return EXIT_FAILURE;
 	}
 	return (iofunc_open_default(ctp, msg, handle, extra));
-}
-void set(char *argv[]) {
-	int tempBpm = atoi(argv[1]);
-	int tempTst = atoi(argv[2]);
-	int tempTsb = atoi(argv[3]);
-	for (int i = 0; i < 8; i++) {
-
-		if (timeTable[i][0] == tempTst && timeTable[i][1] == tempTsb) {
-			bpm = tempBpm;
-			tst = tempTst;
-			tsb = tempTsb;
-			outputPosition = i;
-			return;
-		}
-	}
-	printf("Invalid timings.\n");
-	return;
 }
 
 void *childThread() {
@@ -173,6 +194,7 @@ void *childThread() {
 		fscanf(fp, "%s", inTst);
 		fscanf(fp, "%s", inTsb);
 		char *input[] = { inBpm, inTst, inTsb };
+
 		set(input);
 	}
 
@@ -180,13 +202,13 @@ void *childThread() {
 
 	while (1) {
 		rcvid = MsgReceivePulse(attach->chid, &msg, sizeof(msg), NULL);
-
-		printf("rcvid = %d\n", rcvid);
-
+		//printf("in thread!\n");
 		if (rcvid == 0) {
+			//	printf("in rcvid!\n");
 
-			printf("msg.pulse.code = %d		it must be = %d\n", msg.pulse.code, MY_PULSE_CODE);
 			if (msg.pulse.code == MY_PULSE_CODE) { //ASK PROF ABOUT THIS
+				//	printf("in pulse code!\n");
+
 				fp = fopen("/dev/local/metronome", "r");
 				if (fp == NULL) {
 					perror("fopen failed");
@@ -195,33 +217,27 @@ void *childThread() {
 
 				fscanf(fp, "%s", command);
 				if (stopped == 0) {
-					printf("was stopped\n");
 					if (strcmp(command, "set") == 0) {
 						fscanf(fp, "%s", inBpm);
 						fscanf(fp, "%s", inTst);
 						fscanf(fp, "%s", inTsb);
 						char *input[] = { inBpm, inTst, inTsb };
-						printf("was set\n");
+
 						set(input);
 					}
-					if (msg.pulse.value.sival_int<10) {
-						printf("sival___\n");
-						int sleepTime = msg.pulse.value.sival_int;
+					if (msg.pulse.value.sival_int < 10) {
+						//int sleepTime = msg.pulse.value.sival_int;
 						//sleep(sleepTime);
 					}
-					if (msg.pulse.value.sival_int==stopCode) {
-						printf("has stopped___\n");
+					if (msg.pulse.value.sival_int == stopCode) {
 						stopped = 1;
 					}
 
 				}
-				printf("next check!\n");
-				if (msg.pulse.value.sival_int==startCode) {
+				if (msg.pulse.value.sival_int == startCode) {
 					stopped = 0;
 				}
-				printf("sival = %d\n", msg.pulse.value.sival_int);
-				if (msg.pulse.value.sival_int==quitCode) {
-					printf("quit!!!\n");
+				if (msg.pulse.value.sival_int == quitCode) {
 					name_detach(attach, 0);
 					quit = 1;
 					pthread_exit(NULL);
@@ -240,11 +256,9 @@ void *childThread() {
 
 int main(int argc, char *argv[]) {
 	if (argc == 4) {
-		set(argv);
-		//return EXIT_SUCCESS;
-	}
-	else
-	{
+		char *input[] = { argv[1], argv[2], argv[3] };
+		set(input);
+	} else {
 		printf("./metronome <bpm> <ts-top> <ts-bottom>\n");
 		return EXIT_FAILURE;
 	}
@@ -284,7 +298,8 @@ int main(int argc, char *argv[]) {
 		dispatch_handler(ctp);
 	}
 
-	printf("closed successfully!\n");
 	pthread_attr_destroy(&attr);
-	name_close(server_coid);	return EXIT_SUCCESS;
+	name_close(server_coid);
+	printf("Metronome closed gracefully!\n");
+	return EXIT_SUCCESS;
 }
